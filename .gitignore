@@ -1,9 +1,6 @@
-# Folder dependensi (ukurannya sangat besar, tidak perlu di-upload)
 node_modules/
 
-# File rahasia (berisi API Key Appwrite Anda)
 .env
 
-# File log atau sistem lainnya
 npm-debug.log
 .DS_Store
