@@ -116,32 +116,59 @@ function getRemainingDays(due_date) {
 }
 
 function renderTasks(tasks) {
-  const container = document.getElementById("taskList");
-  container.innerHTML = "";
+  // Ambil ketiga kontainer kolom Kanban
+  const pendingContainer = document.getElementById("list-pending");
+  const inProgressContainer = document.getElementById("list-inprogress");
+  const completedContainer = document.getElementById("list-completed");
+
+  // Kosongkan kontainer sebelum merender ulang
+  if (pendingContainer) pendingContainer.innerHTML = "";
+  if (inProgressContainer) inProgressContainer.innerHTML = "";
+  if (completedContainer) completedContainer.innerHTML = "";
 
   tasks.forEach(task => {
-    container.innerHTML += `
-      <div class="col-md-4 mb-3">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5>${task.title}</h5>
-            <p>${task.description || ""}</p>
-            <p>
-              <strong>📅 ${task.due_date
-                ? new Date(task.due_date).toLocaleDateString()
-                : "N/A"}</strong><br>
-              <small class="text-muted">
-                ${task.due_date ? getRemainingDays(task.due_date) : ""}
+    // Tentukan kolom tujuan berdasarkan status
+    let targetContainer;
+    if (task.status === "Pending") targetContainer = pendingContainer;
+    else if (task.status === "In Progress") targetContainer = inProgressContainer;
+    else if (task.status === "Completed") targetContainer = completedContainer;
+
+    // Jika kolom ditemukan, masukkan kartu tugas
+    if (targetContainer) {
+      targetContainer.innerHTML += `
+        <div class="card mb-3 shadow-sm border-start border-4 ${getPriorityColor(task.priority)}">
+          <div class="card-body p-3">
+            <h6 class="fw-bold mb-1">${task.title}</h6>
+            <p class="text-muted small mb-2">${task.description || "No description"}</p>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-muted" style="font-size: 0.75rem;">
+                📅 ${task.due_date ? new Date(task.due_date).toLocaleDateString() : "N/A"}
               </small>
-            </p>
-            <small>${task.status} | ${task.priority}</small>
-            <br/>
-            <button onclick='openEditModal(${JSON.stringify(task)})' class="btn btn-primary btn-sm mt-2">Edit</button>
-            <button onclick="deleteTask('${task.$id}')" class="btn btn-danger btn-sm mt-2">Delete</button>
+              <span class="badge bg-light text-dark border" style="font-size: 0.65rem;">
+                ${task.priority}
+              </span>
+            </div>
+
+            <div class="mt-3 d-flex gap-1">
+              <button onclick='openEditModal(${JSON.stringify(task)})' class="btn btn-outline-primary btn-sm flex-grow-1">Edit</button>
+              <button onclick="deleteTask('${task.$id}')" class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-trash"></i> Delete
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    `;
+      `;
+    }
   });
 }
 
+// Helper function untuk warna prioritas
+function getPriorityColor(priority) {
+  switch (priority) {
+    case 'High': return 'border-danger';
+    case 'Medium': return 'border-warning';
+    case 'Low': return 'border-info';
+    default: return 'border-secondary';
+  }
+}
