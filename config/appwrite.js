@@ -1,7 +1,6 @@
 import { Client, Databases } from 'node-appwrite';
-const client = new Client();
 
-dotenv.config();
+const client = new Client();
 
 const endpoint = process.env.APPWRITE_ENDPOINT;
 const projectId = process.env.APPWRITE_PROJECT_ID;
